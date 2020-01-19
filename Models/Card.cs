@@ -13,8 +13,6 @@ namespace MyDeckAPI.Models
         public string BackContent { get; set; }
         public int Frequency { get; set; }
         public DateTime LastTrainDate { get; set; }
-
-
         public int DeckId { get; set; }
         public Deck Deck { get; set; }
     }

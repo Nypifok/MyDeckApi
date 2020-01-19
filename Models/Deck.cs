@@ -11,11 +11,14 @@ namespace MyDeckAPI.Models
         public string Name { get; set; }
         public bool Privacy { get; set; }
         public string Icon { get; set; }
-        public int AuthorId { get; set; }
-        public User Author { get; set; }
-        public  ICollection<UserDeck> UserDecks { get; set; }
+        public string Author { get; set; }
+        public ICollection<UserDeck> UserDecks { get; set; }
         public ICollection<Card> Cards { get; set; }
-      
+        public Deck()
+        {
+            UserDecks = new List<UserDeck>();
+            Cards = new List<Card>();
+        }
        
     }
 }

@@ -24,9 +24,28 @@ namespace MyDeckAPI.Models
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           // modelBuilder.Entity<UserDeck>().HasKey(ud => new { ud.UserId, ud.DeckId });
 
+            modelBuilder.Entity<UserDeck>()
+                        .HasOne(ud => ud.User)
+                        .WithMany(u => u.UserDecks)
+                        .HasForeignKey(ud => ud.UserId);
+            modelBuilder.Entity<UserDeck>()
+                        .HasOne(ud => ud.Deck)
+                        .WithMany(d => d.UserDecks)
+                        .HasForeignKey(ud => ud.DeckId);
+            modelBuilder.Entity<Subscribe>()
+                        .HasOne(fp => fp.Follower)
+                        .WithMany(f => f.Publishers)
+                        .HasForeignKey(fp => fp.FollowerId)
+                        .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Subscribe>()
+                        .HasOne(fp => fp.Publisher)
+                        .WithMany(p => p.Followers)
+                        .HasForeignKey(fp => fp.PublisherId)
+                        .OnDelete(DeleteBehavior.Cascade);
+            
+               
         }
     }
 }

@@ -9,13 +9,9 @@ namespace MyDeckAPI.Models
     public class Subscribe
     {
         public int Id { get; set; }
-        [NotMapped]
-        public int FollowerId { get; set; }
-        
+        public int? FollowerId { get; set; }
         public User Follower { get; set; }
-        [NotMapped]
-        public int PublisherId { get; set; }
-        
+        public int? PublisherId { get; set; }
         public User Publisher { get; set; }
 
 
