@@ -8,10 +8,10 @@ namespace MyDeckAPI.Models
 {
     public class Subscribe
     {
-        public int Id { get; set; }
-        public int? FollowerId { get; set; }
+        public int Id { get; set; } 
+        public int FollowerId { get; set; }
         public User Follower { get; set; }
-        public int? PublisherId { get; set; }
+        public int PublisherId { get; set; }
         public User Publisher { get; set; }
 
 

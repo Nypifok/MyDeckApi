@@ -7,24 +7,31 @@ using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
 using MyDeckAPI.Models;
 
+
 namespace MyDeckAPI.Controllers
 {
     [Route("mydeckapi/[controller]")]
     public class UserController : Controller
     {
+        
         private readonly IGenericRepository<User> db;
         private readonly ILogger<UserController> logger;
-
+        
         public UserController(ILogger<UserController> _logger, IGenericRepository<User> context)
         {
+            
+            
+
             db = context;
             logger = _logger;
+            
         }
-
+        
 
         [HttpGet("[action]")]
         public IActionResult FindAll()
         {
+           
             var content = db.FindAll();
             logger.LogInformation("------------> All users have been returned <------------");
             return Ok(Json(content));

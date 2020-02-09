@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
 using MyDeckAPI.Models;
+using MyDeckAPI.Services;
 
 namespace MyDeckAPI
 {
@@ -31,12 +33,18 @@ namespace MyDeckAPI
         {
             
             services.AddDbContext<MDContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddTransient<IGenericRepository<User>, GenericRepository<User>>();
-            services.AddTransient<IGenericRepository<UserDeck>, GenericRepository<UserDeck>>();
-            services.AddTransient<IGenericRepository<Deck>, GenericRepository<Deck>>();
-            services.AddTransient<IGenericRepository<Subscribe>, GenericRepository<Subscribe>>();
-            services.AddTransient<IGenericRepository<Card>, GenericRepository<Card>>();
+            
+            services.AddTransient<IGenericRepository<User>, UserRepository<User>>();
+            services.AddTransient<IGenericRepository<UserDeck>, UserDeckRepository<UserDeck>>();
+            services.AddTransient<IGenericRepository<Deck>, DeckRepository<Deck>>();
+            services.AddTransient<IGenericRepository<Subscribe>, SubscribeRepository<Subscribe>>();
+            services.AddTransient<IGenericRepository<Card>, CardRepository<Card>>();
+           
             services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyDeck API", Version = "v1" });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
@@ -45,18 +53,26 @@ namespace MyDeckAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseStaticFiles();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyDeck API V1");
+               
+            });
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            
+           
+
         }
     }
 }

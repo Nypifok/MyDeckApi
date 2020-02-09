@@ -18,34 +18,44 @@ namespace MyDeckAPI.Models
         public MDContext(DbContextOptions<MDContext> options)
             : base(options)
         {
-            Database.EnsureDeleted();
+           // Database.EnsureDeleted();
             Database.EnsureCreated();
 
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<UserDeck>()
+                .HasKey(ud => new { ud.UserId,ud.DeckId });
 
             modelBuilder.Entity<UserDeck>()
                         .HasOne(ud => ud.User)
                         .WithMany(u => u.UserDecks)
-                        .HasForeignKey(ud => ud.UserId);
+                        .HasForeignKey(ud => ud.UserId)
+                        .OnDelete(DeleteBehavior.Cascade);
+                        
             modelBuilder.Entity<UserDeck>()
                         .HasOne(ud => ud.Deck)
                         .WithMany(d => d.UserDecks)
-                        .HasForeignKey(ud => ud.DeckId);
-            modelBuilder.Entity<Subscribe>()
-                        .HasOne(fp => fp.Follower)
-                        .WithMany(f => f.Publishers)
-                        .HasForeignKey(fp => fp.FollowerId)
+                        .HasForeignKey(ud => ud.DeckId)
                         .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Subscribe>().HasKey(s => new { s.FollowerId, s.PublisherId });
+            modelBuilder.Entity<Subscribe>()
+                        .HasOne(s => s.Follower)
+                        .WithMany(f => f.Publishers)
+                        .HasForeignKey(s => s.FollowerId)
+                        .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Subscribe>()
-                        .HasOne(fp => fp.Publisher)
+                        .HasOne(s => s.Publisher)
                         .WithMany(p => p.Followers)
-                        .HasForeignKey(fp => fp.PublisherId)
-                        .OnDelete(DeleteBehavior.Cascade);
-            
-               
+                        .HasForeignKey(s => s.PublisherId)
+                        .OnDelete(DeleteBehavior.Restrict);
+           
+           
+
+
+
+
         }
     }
 }

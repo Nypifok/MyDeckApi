@@ -9,10 +9,7 @@ namespace MyDeckAPI.Models
     public class User
     {
         public int Id { get; set; }
-        public string Email { get; set; }
-        public string Login { get; set; }
-        public string Password { get; set; }
-        public string Icon { get; set; }
+        public int HashCode { get; set; }
         public ICollection<Subscribe> Followers { get; set; }
         public ICollection<Subscribe> Publishers { get; set; }
         public  ICollection<UserDeck> UserDecks { get; set; }

@@ -6,34 +6,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MyDeckAPI
+namespace MyDeckAPI.Services
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class DeckRepository<Deck> : IGenericRepository<Deck> where Deck : class
     {
         private MDContext _context;
-        private DbSet<T> table;
-        public GenericRepository(MDContext context)
+        private DbSet<Deck> table;
+
+        public DeckRepository(MDContext context)
         {
             _context = context;
-            table = _context.Set<T>();
+            table = _context.Set<Deck>();
         }
+
         public void Delete(object Id)
         {
-            T exists = table.Find(Id);
+           
+            Deck exists = table.Find(Id);
             table.Remove(exists);
         }
 
-        public List<T> FindAll()
+        public List<Deck> FindAll()
         {
             return table.ToList();
         }
 
-        public T FindById(object Id)
+        public Deck FindById(object Id)
         {
             return table.Find(Id);
         }
 
-        public void Insert(T obj)
+        public void Insert(Deck obj)
         {
             table.Add(obj);
         }
@@ -43,10 +46,9 @@ namespace MyDeckAPI
             _context.SaveChanges();
         }
 
-        public void Update(T obj)
+        public void Update(Deck obj)
         {
             table.Update(obj);
-            
         }
     }
 }
