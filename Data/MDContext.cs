@@ -18,7 +18,7 @@ namespace MyDeckAPI.Models
         public MDContext(DbContextOptions<MDContext> options)
             : base(options)
         {
-           // Database.EnsureDeleted();
+          //  Database.EnsureDeleted();
             Database.EnsureCreated();
 
         }

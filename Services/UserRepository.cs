@@ -21,9 +21,9 @@ namespace MyDeckAPI.Services
 
         public void Delete(object Id)
         {
-            var subscriptions = _context.Subscribes.Where(p=>p.PublisherId==(Int32)Id);
+            var subscriptions = _context.Subscribes.Where(p=>p.PublisherId==(Guid)Id);
             _context.Subscribes.RemoveRange(subscriptions);
-            subscriptions = _context.Subscribes.Where(f => f.FollowerId == (Int32)Id);
+            subscriptions = _context.Subscribes.Where(f => f.FollowerId == (Guid)Id);
             _context.Subscribes.RemoveRange(subscriptions);
             User exists = table.Find(Id);
             table.Remove(exists);

@@ -58,7 +58,7 @@ namespace MyDeckAPI
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyDeck API V1");
-               
+              
             });
 
             app.UseHttpsRedirection();

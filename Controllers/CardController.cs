@@ -34,7 +34,7 @@ namespace MyDeckAPI.Controllers
 
        
         [HttpGet("[action]/{id}")]
-        public IActionResult FindById(int id)
+        public IActionResult FindById(Guid id)
         {
             var content = db.FindById(id);
             if (content != null)
@@ -82,7 +82,7 @@ namespace MyDeckAPI.Controllers
 
 
         [HttpDelete("[action]/{id}")]
-        public IActionResult DeleteById(int id)
+        public IActionResult DeleteById(Guid id)
         {
             var content = db.FindById(id);
             if (content != null)
