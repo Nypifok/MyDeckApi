@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyDeckAPI", "MyDeckAPI\MyDeckAPI.csproj", "{F039A8FF-D6A5-4A1D-81FC-75DC2A6FE4BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyDeckAPI_Tests", "MyDeckAPI_Tests\MyDeckAPI_Tests.csproj", "{0D6F53B5-39F6-4B31-8605-8DEDC22D05BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F039A8FF-D6A5-4A1D-81FC-75DC2A6FE4BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F039A8FF-D6A5-4A1D-81FC-75DC2A6FE4BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F039A8FF-D6A5-4A1D-81FC-75DC2A6FE4BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F039A8FF-D6A5-4A1D-81FC-75DC2A6FE4BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D6F53B5-39F6-4B31-8605-8DEDC22D05BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D6F53B5-39F6-4B31-8605-8DEDC22D05BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D6F53B5-39F6-4B31-8605-8DEDC22D05BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D6F53B5-39F6-4B31-8605-8DEDC22D05BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD909671-C2AD-4524-B37C-D286218F1F82}
+	EndGlobalSection
+EndGlobal
