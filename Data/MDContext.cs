@@ -18,12 +18,13 @@ namespace MyDeckAPI.Models
         public MDContext(DbContextOptions<MDContext> options)
             : base(options)
         {
-          //  Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
 
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Category>().HasKey(c => c.Category_Name);
             modelBuilder.Entity<UserDeck>()
                 .HasKey(ud => new { ud.UserId,ud.DeckId });
 
@@ -50,7 +51,22 @@ namespace MyDeckAPI.Models
                         .WithMany(p => p.Followers)
                         .HasForeignKey(s => s.PublisherId)
                         .OnDelete(DeleteBehavior.Restrict);
-           
+            modelBuilder.Entity<Deck>()
+                        .HasOne(c => c.Category)
+                        .WithMany(d => d.Decks)
+                        .HasForeignKey(k => k.Category_Name);
+            modelBuilder.Entity<Card>()
+                       .HasOne(d => d.Parent_Deck)
+                       .WithMany(c => c.Cards)
+                       .HasForeignKey(d => d.Parent_Deck_Id);
+
+            modelBuilder.Entity<Category>().HasData(new Category { Category_Name = "No category" },
+                                                    new Category { Category_Name = "Math"},
+                                                    new Category { Category_Name = "Foreign Languages" },
+                                                    new Category { Category_Name = "Chemistry" },
+                                                    new Category { Category_Name = "Art" },
+                                                    new Category { Category_Name = "IT" },
+                                                    new Category { Category_Name = "Others" }        );
            
 
 
