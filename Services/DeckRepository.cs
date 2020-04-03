@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MyDeckAPI.Services
 {
@@ -21,7 +22,7 @@ namespace MyDeckAPI.Services
 
         public void Delete(object Id)
         {
-           
+
             Deck exists = table.Find(Id);
             table.Remove(exists);
         }
@@ -50,5 +51,36 @@ namespace MyDeckAPI.Services
         {
             table.Update(obj);
         }
+        public string AllCurrentUserDecks(string login)
+        {
+            var content = _context.Decks.Where(d => d.Author == login).ToList();
+            return JsonConvert.SerializeObject(content);
+        }
+        public string AllCurrentUserDecks(Guid id)
+        {
+            var login = _context.Users.Find(id).UserName;
+            var content = _context.Decks.Where(d => d.Author == login).ToList();
+            return JsonConvert.SerializeObject(content);
+        }
+        public string AllCurrentUserDecksWithCards(string login)
+        {
+            var content = _context.Decks.Where(d => d.Author == login).Include(c => c.Cards).ToList();
+            return JsonConvert.SerializeObject(content, Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                });
+        }
+        public string AllCurrentUserDecksWithCards(Guid id)
+        {
+            var login = _context.Users.Find(id).UserName;
+            var content = _context.Decks.Where(d => d.Author == login).Include(c => c.Cards).ToList();
+            return JsonConvert.SerializeObject(content, Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                });
+        }
+
     }
 }

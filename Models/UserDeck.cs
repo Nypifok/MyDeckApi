@@ -10,14 +10,14 @@ namespace MyDeckAPI.Models
     public class UserDeck
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid UserDeck_Id { get; set; }
 
         
-        public Guid UserId { get; set; }
+        public Guid User_Id { get; set; }
         public User User { get; set; }
 
         
-        public Guid DeckId { get; set; } 
+        public Guid Deck_Id { get; set; } 
         public Deck Deck { get; set; }
     }
 }

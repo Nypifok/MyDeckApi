@@ -18,7 +18,7 @@ namespace MyDeckAPI.Models
         public MDContext(DbContextOptions<MDContext> options)
             : base(options)
         {
-            //Database.EnsureDeleted();
+           // Database.EnsureDeleted();
             Database.EnsureCreated();
 
         }
@@ -26,30 +26,30 @@ namespace MyDeckAPI.Models
         {
             modelBuilder.Entity<Category>().HasKey(c => c.Category_Name);
             modelBuilder.Entity<UserDeck>()
-                .HasKey(ud => new { ud.UserId,ud.DeckId });
+                .HasKey(ud => new { ud.User_Id,ud.Deck_Id });
 
             modelBuilder.Entity<UserDeck>()
                         .HasOne(ud => ud.User)
                         .WithMany(u => u.UserDecks)
-                        .HasForeignKey(ud => ud.UserId)
+                        .HasForeignKey(ud => ud.User_Id)
                         .OnDelete(DeleteBehavior.Cascade);
                         
             modelBuilder.Entity<UserDeck>()
                         .HasOne(ud => ud.Deck)
                         .WithMany(d => d.UserDecks)
-                        .HasForeignKey(ud => ud.DeckId)
+                        .HasForeignKey(ud => ud.Deck_Id)
                         .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Subscribe>().HasKey(s => new { s.FollowerId, s.PublisherId });
+            modelBuilder.Entity<Subscribe>().HasKey(s => new { s.Follower_Id, s.Publisher_Id });
             modelBuilder.Entity<Subscribe>()
                         .HasOne(s => s.Follower)
                         .WithMany(f => f.Publishers)
-                        .HasForeignKey(s => s.FollowerId)
+                        .HasForeignKey(s => s.Follower_Id)
                         .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Subscribe>()
                         .HasOne(s => s.Publisher)
                         .WithMany(p => p.Followers)
-                        .HasForeignKey(s => s.PublisherId)
+                        .HasForeignKey(s => s.Publisher_Id)
                         .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Deck>()
                         .HasOne(c => c.Category)
@@ -67,9 +67,9 @@ namespace MyDeckAPI.Models
                                                     new Category { Category_Name = "Art" },
                                                     new Category { Category_Name = "IT" },
                                                     new Category { Category_Name = "Others" }        );
-           
 
-
+            modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();
+            modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
 
         }

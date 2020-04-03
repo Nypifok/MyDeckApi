@@ -10,18 +10,25 @@ namespace MyDeckAPI.Models
     public class User
     {
         [Key]
-        public Guid Id { get; set; }
-        
+        public Guid User_Id { get; set; }
+        [Required]
+        public string UserName { get; set; }
+        [Required]
+        public string Email { get; set; }
+        public string GoogleId { get; set; }
+        public string Avatar_Path { get; set; }
+        public string Locale { get; set; }
+
         public ICollection<Subscribe> Followers { get; set; }
         public ICollection<Subscribe> Publishers { get; set; }
-        public  ICollection<UserDeck> UserDecks { get; set; }
+        public ICollection<UserDeck> UserDecks { get; set; }
         public User()
         {
             UserDecks = new List<UserDeck>();
             Publishers = new List<Subscribe>();
             Followers = new List<Subscribe>();
         }
-        
-      
+
+
     }
 }

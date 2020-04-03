@@ -6,20 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
 using MyDeckAPI.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using MyDeckAPI.Services;
 
 namespace MyDeckAPI.Controllers
 {
     [Route("mydeckapi/[controller]")]
     public class CardController : Controller
     {
-        private readonly IGenericRepository<Card> db;
+        private readonly CardRepository<Card> db;
         private readonly ILogger<CardController> logger;
 
         public CardController(ILogger<CardController> _logger, IGenericRepository<Card> context)
         {
-            db = context;
+            db = (CardRepository<Card>)context;
             logger = _logger;
         }
 
@@ -27,75 +26,115 @@ namespace MyDeckAPI.Controllers
         [HttpGet("[action]")]
         public IActionResult FindAll()
         {
-            var content = db.FindAll();
-            logger.LogInformation("------------> All cards have been returned <------------");
-            return Ok(Json(content));
+            try
+            {
+                var content = db.FindAll();
+                logger.LogInformation("------------> All cards have been returned <------------");
+                return Ok(Json(content));
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
-       
+
         [HttpGet("[action]/{id}")]
         public IActionResult FindById(Guid id)
         {
-            var content = db.FindById(id);
-            if (content != null)
+            try
             {
-                logger.LogInformation("------------> Card have been returned <------------");
-                return Ok(Json(content));
+                var content = db.FindById(id);
+                if (content != null)
+                {
+                    logger.LogInformation("------------> Card have been returned <------------");
+                    return Ok(Json(content));
+                }
+                else
+                {
+                    logger.LogWarning("------------> Card not found <------------");
+                    return BadRequest("Card not found");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                logger.LogWarning("------------> Card not found <------------");
-                return BadRequest();
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
-        
+
         [HttpPost("[action]")]
         public IActionResult Insert([FromBody] IEnumerable<Card> value)
         {
-            var content = value;
-            foreach (Card crd in content)
+            try
             {
-                db.Insert(crd);
-            }
+                var content = value;
+                foreach (Card crd in content)
+                {
+                    db.Insert(crd);
+                }
 
-            db.Save();
-            logger.LogInformation("------------> Card/s have been added <------------");
-            return Ok();
+                db.Save();
+                logger.LogInformation("------------> Card/s have been added <------------");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
-       
+
         [HttpPut("[action]")]
         public IActionResult Update([FromBody]IEnumerable<Card> value)
         {
-            var content = value;
-
-            foreach (Card crd in content)
+            try
             {
-                db.Update(crd);
-            }
+                var content = value;
 
-            db.Save();
-            logger.LogInformation("------------> Card/s have been updated <------------");
-            return Ok();
+                foreach (Card crd in content)
+                {
+                    db.Update(crd);
+                }
+
+                db.Save();
+                logger.LogInformation("------------> Card/s have been updated <------------");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
 
         [HttpDelete("[action]/{id}")]
         public IActionResult DeleteById(Guid id)
         {
-            var content = db.FindById(id);
-            if (content != null)
+            try
             {
-                db.Delete(id);
-                db.Save();
-                logger.LogInformation("------------> Card have been deleted <------------");
-                return Ok();
+                var content = db.FindById(id);
+                if (content != null)
+                {
+                    db.Delete(id);
+                    db.Save();
+                    logger.LogInformation("------------> Card have been deleted <------------");
+                    return Ok();
+                }
+                else
+                {
+                    logger.LogWarning("------------> Card not found <------------");
+                    return BadRequest("Card not found");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                logger.LogWarning("------------> Card not found <------------");
-                return BadRequest();
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }

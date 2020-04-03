@@ -10,10 +10,10 @@ namespace MyDeckAPI.Models
     public class Subscribe
     {
         [Key]
-        public Guid Id { get; set; } 
-        public Guid FollowerId { get; set; }
+        public Guid Subscribe_Id { get; set; } 
+        public Guid Follower_Id { get; set; }
         public User Follower { get; set; }
-        public Guid PublisherId { get; set; }
+        public Guid Publisher_Id { get; set; }
         public User Publisher { get; set; }
 
 

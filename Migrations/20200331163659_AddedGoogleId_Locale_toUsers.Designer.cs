@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyDeckAPI.Models;
 
 namespace MyDeckAPI.Migrations
 {
     [DbContext(typeof(MDContext))]
-    partial class MDContextModelSnapshot : ModelSnapshot
+    [Migration("20200331163659_AddedGoogleId_Locale_toUsers")]
+    partial class AddedGoogleId_Locale_toUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,11 +154,10 @@ namespace MyDeckAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("GoogleId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("GoogleId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Locale")
                         .HasColumnType("nvarchar(max)");
@@ -168,7 +169,8 @@ namespace MyDeckAPI.Migrations
                     b.HasKey("User_Id");
 
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("UserName")
                         .IsUnique();

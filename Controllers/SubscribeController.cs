@@ -6,20 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
 using MyDeckAPI.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using MyDeckAPI.Services;
 
 namespace MyDeckAPI.Controllers
 {
     [Route("mydeckapi/[controller]")]
     public class SubscribeController : Controller
     {
-        private readonly IGenericRepository<Subscribe> db;
+        private readonly SubscribeRepository<Subscribe> db;
         private readonly ILogger<SubscribeController> logger;
 
         public SubscribeController(ILogger<SubscribeController> _logger, IGenericRepository<Subscribe> context)
         {
-            db = context;
+            db =(SubscribeRepository<Subscribe>)context;
             logger = _logger;
         }
 
@@ -27,75 +26,115 @@ namespace MyDeckAPI.Controllers
         [HttpGet("[action]")]
         public IActionResult FindAll()
         {
-            var content = db.FindAll();
-            logger.LogInformation("------------> All subscribes have been returned <------------");
-            return Ok(Json(content));
+            try
+            {
+                var content = db.FindAll();
+                logger.LogInformation("------------> All subscribes have been returned <------------");
+                return Ok(Json(content));
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
-        // GET api/<controller>/5
+
         [HttpGet("[action]/{id}")]
         public IActionResult FindById(Guid id)
         {
-            var content = db.FindById(id);
-            if (content != null)
+            try
             {
-                logger.LogInformation("------------> Subscribe have been returned <------------");
-                return Ok(Json(content));
+                var content = db.FindById(id);
+                if (content != null)
+                {
+                    logger.LogInformation("------------> Subscribe have been returned <------------");
+                    return Ok(Json(content));
+                }
+                else
+                {
+                    logger.LogWarning("------------> Subscribe not found <------------");
+                    return BadRequest("Subscribe not found");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                logger.LogWarning("------------> Subscribe not found <------------");
-                return BadRequest();
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
-        // POST api/<controller>
+   
         [HttpPost("[action]")]
         public IActionResult Insert([FromBody] IEnumerable<Subscribe> value)
         {
-            var content = value;
-            foreach (Subscribe sbs in content)
+            try
             {
-                db.Insert(sbs);
-            }
+                var content = value;
+                foreach (Subscribe sbs in content)
+                {
+                    db.Insert(sbs);
+                }
 
-            db.Save();
-            logger.LogInformation("------------> Subscribe/s have been added <------------");
-            return Ok();
+                db.Save();
+                logger.LogInformation("------------> Subscribe/s have been added <------------");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
-        // PUT api/<controller>/5
+  
         [HttpPut("[action]")]
         public IActionResult Update([FromBody]IEnumerable<Subscribe> value)
         {
-            var content = value;
-
-            foreach (Subscribe sbs in content)
+            try
             {
-                db.Update(sbs);
-            }
+                var content = value;
 
-            db.Save();
-            logger.LogInformation("------------> Subscribe/s have been updated <------------");
-            return Ok();
+                foreach (Subscribe sbs in content)
+                {
+                    db.Update(sbs);
+                }
+
+                db.Save();
+                logger.LogInformation("------------> Subscribe/s have been updated <------------");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
 
         [HttpDelete("[action]/{id}")]
         public IActionResult DeleteById(Guid id)
         {
-            var content = db.FindById(id);
-            if (content != null)
+            try
             {
-                db.Delete(id);
-                db.Save();
-                logger.LogInformation("------------> Subscribe have been deleted <------------");
-                return Ok();
+                var content = db.FindById(id);
+                if (content != null)
+                {
+                    db.Delete(id);
+                    db.Save();
+                    logger.LogInformation("------------> Subscribe have been deleted <------------");
+                    return Ok();
+                }
+                else
+                {
+                    logger.LogWarning("------------> Subscribe not found <------------");
+                    return BadRequest("Subscribe not found");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                logger.LogWarning("------------> Subscribe not found <------------");
-                return BadRequest();
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }
