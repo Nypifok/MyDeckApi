@@ -16,9 +16,13 @@ namespace MyDeckAPI.Models
         [Required]
         public string Email { get; set; }
         public string GoogleId { get; set; }
+        public string Password { get; set; }
         public string Avatar_Path { get; set; }
         public string Locale { get; set; }
-
+        public string RefreshToken { get; set; }
+        public string Sault { get; set; }
+        public string Role_Name { get; set; }
+        public Role Role { get; set; }
         public ICollection<Subscribe> Followers { get; set; }
         public ICollection<Subscribe> Publishers { get; set; }
         public ICollection<UserDeck> UserDecks { get; set; }

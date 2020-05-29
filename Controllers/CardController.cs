@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
@@ -10,6 +11,7 @@ using MyDeckAPI.Services;
 
 namespace MyDeckAPI.Controllers
 {
+    [Authorize]
     [Route("mydeckapi/[controller]")]
     public class CardController : Controller
     {
@@ -22,7 +24,7 @@ namespace MyDeckAPI.Controllers
             logger = _logger;
         }
 
-
+        [AllowAnonymous]
         [HttpGet("[action]")]
         public IActionResult FindAll()
         {
@@ -54,7 +56,7 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Card not found <------------");
-                    return BadRequest("Card not found");
+                    return NotFound("Card not found");
                 }
             }
             catch (Exception ex)
@@ -111,25 +113,16 @@ namespace MyDeckAPI.Controllers
             }
         }
 
-
-        [HttpDelete("[action]/{id}")]
-        public IActionResult DeleteById(Guid id)
+        [AllowAnonymous]
+        [HttpDelete("[action]")]
+        public IActionResult Delete([FromBody]IEnumerable<Card> value)
         {
             try
-            {
-                var content = db.FindById(id);
-                if (content != null)
-                {
-                    db.Delete(id);
-                    db.Save();
+            {               
+                    db.Delete(value);
                     logger.LogInformation("------------> Card have been deleted <------------");
                     return Ok();
-                }
-                else
-                {
-                    logger.LogWarning("------------> Card not found <------------");
-                    return BadRequest("Card not found");
-                }
+             
             }
             catch (Exception ex)
             {

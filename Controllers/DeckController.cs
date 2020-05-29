@@ -13,6 +13,7 @@ using MyDeckAPI.Services;
 
 namespace MyDeckAPI.Controllers
 {   
+    // [Authorize]
     [Route("mydeckapi/[controller]")]
     public class DeckController : Controller
     {
@@ -24,6 +25,7 @@ namespace MyDeckAPI.Controllers
             db = (DeckRepository<Deck>)context;
             logger = _logger;
         }
+
         [HttpGet("[action]")]
         public IActionResult FindAll()
         {
@@ -46,16 +48,16 @@ namespace MyDeckAPI.Controllers
         {
             try
             {
-                var content = db.FindById(id);
+                var content = db.WatchDeck(id);
                 if (content != null)
                 {
                     logger.LogInformation("------------> Deck have been returned <------------");
-                    return Ok(Json(content));
+                    return Ok(content);
                 }
                 else
                 {
                     logger.LogWarning("------------> Deck not found <------------");
-                    return BadRequest("Deck not found");
+                    return NotFound("Deck not found");
                 }
             }
             catch (Exception ex)
@@ -65,7 +67,30 @@ namespace MyDeckAPI.Controllers
             }
         }
 
-
+       /* [HttpGet("[action]/{id}")]
+        public IActionResult WatchDeckWitchCards(Guid id)
+        {
+            try
+            {
+                var content = db.WatchDeck(id);
+                if (content != null)
+                {
+                    logger.LogInformation("------------> Deck have been returned <------------");
+                    return Ok(content);
+                }
+                else
+                {
+                    logger.LogWarning("------------> Deck not found <------------");
+                    return NotFound("Deck not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+*/
         [HttpPost("[action]")]
         public IActionResult Insert([FromBody] IEnumerable<Deck> value)
         {
@@ -106,7 +131,7 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Deck not found <------------");
-                    return BadRequest("Deck / s not found");
+                    return NotFound("Deck / s not found");
                 }
             }
             catch (Exception ex)
@@ -135,12 +160,12 @@ namespace MyDeckAPI.Controllers
             
         }
 
-        [HttpGet("[action]/{login}")]
-        public IActionResult AllCurrentUserDecks(string login)
+        [HttpGet("[action]/{id}")]
+        public IActionResult AllCurrentUserDecks(string id)
         {
             try
             {
-                var content = db.AllCurrentUserDecks(login);
+                var content = db.AllCurrentUserDecks(id);
                 if (content !="[]")
                 {
                     logger.LogInformation("------------> Deck/s have been returned <------------");
@@ -149,7 +174,7 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Deck/s not found <------------");
-                    return BadRequest("Deck/s not found");
+                    return NotFound("Deck/s not found");
                 }
             }
             catch (Exception ex)
@@ -158,12 +183,13 @@ namespace MyDeckAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("[action]/{id}")]
-        public IActionResult AllCurrentUserDecksById(Guid id)
+        [AllowAnonymous]
+        [HttpGet("[action]/{category}/{page}")]
+        public IActionResult ChosenCategoryFeed(string category,int page)
         {
             try
             {
-                var content = db.AllCurrentUserDecks(id);
+                var content = db.ChosenCategoryFeed(category,page);
                 if (content != "[]")
                 {
                     logger.LogInformation("------------> Deck/s have been returned <------------");
@@ -172,7 +198,7 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Deck/s not found <------------");
-                    return BadRequest("Deck/s not found");
+                    return NotFound("Deck/s not found");
                 }
             }
             catch (Exception ex)
@@ -181,12 +207,12 @@ namespace MyDeckAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("[action]/{login}")]
-        public IActionResult AllCurrentUserDecksWithCards(string login)
+        [HttpGet("[action]/{id}")]
+        public IActionResult AllUserDecks(Guid id)
         {
             try
             {
-                var content = db.AllCurrentUserDecksWithCards(login);
+                var content = db.AllUserDecks(id);
                 if (content != "[]")
                 {
                     logger.LogInformation("------------> Deck/s have been returned <------------");
@@ -195,18 +221,17 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Deck/s not found <------------");
-                    return BadRequest("Deck / s not found");
+                    return NotFound("Deck/s not found");
                 }
             }
             catch (Exception ex)
             {
-                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpGet("[action]/{id}")]
-        public IActionResult AllCurrentUserDecksWithCardsById(Guid id)
+        public IActionResult AllCurrentUserDecksWithCards(string id)
         {
             try
             {
@@ -219,15 +244,16 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Deck/s not found <------------");
-                    return BadRequest("Deck / s not found");
+                    return NotFound("Deck / s not found");
                 }
             }
             catch (Exception ex)
             {
-                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
+                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
                 return BadRequest(ex.Message);
             }
         }
+
 
     }
 

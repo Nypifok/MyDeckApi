@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyDeckAPI.Models;
 
 namespace MyDeckAPI.Migrations
 {
     [DbContext(typeof(MDContext))]
-    partial class MDContextModelSnapshot : ModelSnapshot
+    [Migration("20200409085558_AddedRole_and_password for user")]
+    partial class AddedRole_and_passwordforuser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,9 +105,7 @@ namespace MyDeckAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Category_Name")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)")
-                        .HasDefaultValue("No category");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -198,16 +198,11 @@ namespace MyDeckAPI.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Role_Name")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)")
-                        .HasDefaultValue("User");
-
-                    b.Property<string>("Sault")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role_Name1")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -218,7 +213,7 @@ namespace MyDeckAPI.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("Role_Name");
+                    b.HasIndex("Role_Name1");
 
                     b.HasIndex("UserName")
                         .IsUnique();
@@ -279,7 +274,7 @@ namespace MyDeckAPI.Migrations
                 {
                     b.HasOne("MyDeckAPI.Models.Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("Role_Name");
+                        .HasForeignKey("Role_Name1");
                 });
 
             modelBuilder.Entity("MyDeckAPI.Models.UserDeck", b =>

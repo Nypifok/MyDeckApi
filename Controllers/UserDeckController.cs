@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
@@ -9,7 +10,8 @@ using MyDeckAPI.Models;
 using MyDeckAPI.Services;
 
 namespace MyDeckAPI.Controllers
-{
+{   
+    [Authorize]
     [Route("mydeckapi/[controller]")]
     public class UserDeckController : Controller
     {
@@ -54,7 +56,7 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Userdeck not found <------------");
-                    return BadRequest("Userdeck not found");
+                    return NotFound("Userdeck not found");
                 }
             }
             catch (Exception ex)
@@ -85,8 +87,7 @@ namespace MyDeckAPI.Controllers
                 logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
                 return BadRequest(ex.Message);
             }
-        }
-
+        }        
 
         [HttpPut("[action]")]
         public IActionResult Update([FromBody]IEnumerable<UserDeck> value)
@@ -128,7 +129,7 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Userdeck not found <------------");
-                    return BadRequest("Userdeck not found");
+                    return NotFound("Userdeck not found");
                 }
             }
             catch (Exception ex)

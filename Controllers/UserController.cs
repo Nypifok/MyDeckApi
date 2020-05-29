@@ -9,11 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
 using MyDeckAPI.Models;
+using MyDeckAPI.Security;
 using MyDeckAPI.Services;
-using Newtonsoft.Json;
+
 
 namespace MyDeckAPI.Controllers
 {
+    [Authorize]
     [Route("mydeckapi/[controller]")]
     public class UserController : Controller
     {
@@ -29,7 +31,7 @@ namespace MyDeckAPI.Controllers
 
         }
 
-
+        [AllowAnonymous]
         [HttpGet("[action]")]
         public IActionResult FindAll()
         {
@@ -41,12 +43,12 @@ namespace MyDeckAPI.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
 
-        
+
         [HttpGet("[action]/{id}")]
         public IActionResult FindById(Guid id)
         {
@@ -61,24 +63,74 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> User not found <------------");
-                    return BadRequest("User not found");
+                    return NotFound("User not found");
                 }
             }
             catch (Exception ex)
             {
-                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpGet("[action]/{id}")]
+        public IActionResult UserProfile(Guid id)
+        {
+            try
+            {
+                var content = db.UserProfile(id);
+                if (content != null)
+                {
+                    logger.LogInformation("------------> Profile have been returned <------------");
+                    return Ok(content);
+                }
+                else
+                {
+                    logger.LogWarning("------------> User not found <------------");
+                    return NotFound("User not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
 
-       
-        [HttpPost("[action]/{idtoken}")]
-        public IActionResult SignInByGoogle(string idtoken)
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public IActionResult SignInByGoogle([FromHeader(Name = "idtoken")] string idtoken)
         {
             try
             {
                 var tmp = db.SignInByGoogle(idtoken);
-                if (tmp != null) { return Ok(tmp); }
+                if (tmp != null)
+                {
+                    logger.LogWarning("------------> U are signed in <------------ \n");
+                    return Ok(tmp);
+                }
+                logger.LogWarning("------------> U are not signed in <------------ \n");
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public IActionResult RefreshTokens([FromBody]Tokens value)
+        {
+            try
+            {
+                var tmp = db.RefreshTokens(value);
+                if (tmp != null)
+                {
+                    logger.LogWarning("------------> Token has been refreshed <------------ \n");
+                    return Ok(tmp);
+                }
+                logger.LogWarning("------------> Token has not been refreshed <------------ \n");
                 return BadRequest();
             }
             catch (Exception ex)
@@ -88,7 +140,6 @@ namespace MyDeckAPI.Controllers
             }
         }
 
-       
         [HttpPut("[action]")]
         public IActionResult Update([FromBody]IEnumerable<User> value)
         {
@@ -107,12 +158,12 @@ namespace MyDeckAPI.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
 
-
+        [Authorize(Roles ="Owner, User")]
         [HttpDelete("[action]/{id}")]
         public IActionResult DeleteById(Guid id)
         {
@@ -129,12 +180,12 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> User not found <------------");
-                    return BadRequest("User not found");
+                    return NotFound("User not found");
                 }
             }
             catch (Exception ex)
             {
-                logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
                 return BadRequest(ex.Message);
             }
         }

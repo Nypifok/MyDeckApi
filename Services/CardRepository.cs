@@ -17,10 +17,10 @@ namespace MyDeckAPI.Services
             _context = context;
             table = _context.Set<Card>();
         }
-        public void Delete(object Id)
+        public void Delete(object cards)
         {
-            Card exists = table.Find(Id);
-            table.Remove(exists);
+            table.RemoveRange((IEnumerable<Card>)cards);
+            _context.SaveChangesAsync();
         }
 
         public List<Card> FindAll()
@@ -47,5 +47,6 @@ namespace MyDeckAPI.Services
         {
             table.Update(obj);
         }
+  
     }
 }

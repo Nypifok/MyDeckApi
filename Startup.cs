@@ -47,8 +47,10 @@ namespace MyDeckAPI
                         ValidateLifetime = true,
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true,
+                        ClockSkew=TimeSpan.FromMinutes(5)
                     };
                 });
+           
 
             services.AddDbContext<MDContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             

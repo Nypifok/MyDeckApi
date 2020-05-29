@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
@@ -10,6 +11,7 @@ using MyDeckAPI.Services;
 
 namespace MyDeckAPI.Controllers
 {
+    [Authorize]
     [Route("mydeckapi/[controller]")]
     public class SubscribeController : Controller
     {
@@ -54,7 +56,7 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Subscribe not found <------------");
-                    return BadRequest("Subscribe not found");
+                    return NotFound("Subscribe not found");
                 }
             }
             catch (Exception ex)
@@ -128,7 +130,7 @@ namespace MyDeckAPI.Controllers
                 else
                 {
                     logger.LogWarning("------------> Subscribe not found <------------");
-                    return BadRequest("Subscribe not found");
+                    return NotFound("Subscribe not found");
                 }
             }
             catch (Exception ex)

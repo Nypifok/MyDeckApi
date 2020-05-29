@@ -15,9 +15,7 @@ namespace MyDeckAPI.Models
         public string Description { get; set; }
         public bool IsPrivate { get; set; }
         public string Icon { get; set; }
-        [NotMapped]
-        private string category_Name { get; set; }
-        public string Category_Name { get { return category_Name; } set { if (value == null) { category_Name = "No category"; } else { category_Name = value; } } }
+        public string Category_Name { get; set; }
         public Category Category { get; set; }
         public string Author { get; set; }
         public ICollection<UserDeck> UserDecks { get; set; }

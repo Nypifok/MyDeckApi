@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyDeckAPI.Interfaces;
 using MyDeckAPI.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,5 +51,6 @@ namespace MyDeckAPI.Services
             table.Update(obj);
 
         }
+        
     }
 }
