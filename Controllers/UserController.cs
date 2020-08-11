@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ using MyDeckAPI.Interfaces;
 using MyDeckAPI.Models;
 using MyDeckAPI.Security;
 using MyDeckAPI.Services;
-
+using Newtonsoft.Json;
 
 namespace MyDeckAPI.Controllers
 {
@@ -20,15 +21,15 @@ namespace MyDeckAPI.Controllers
     public class UserController : Controller
     {
 
-        private readonly UserRepository<User> db;
+        private readonly UserRepository db;
         private readonly ILogger<UserController> logger;
+        private readonly SnakeCaseConverter snakeCaseConverter;
 
-        public UserController(ILogger<UserController> _logger, IGenericRepository<User> context)
+        public UserController(ILogger<UserController> _logger, UserRepository context, SnakeCaseConverter snakeCaseConverter)
         {
-
-            db = (UserRepository<User>)context;
+            db = (UserRepository)context;
             logger = _logger;
-
+            this.snakeCaseConverter = snakeCaseConverter;
         }
 
         [AllowAnonymous]
@@ -39,7 +40,7 @@ namespace MyDeckAPI.Controllers
             {
                 var content = db.FindAll();
                 logger.LogInformation("------------> All users have been returned <------------");
-                return Ok(Json(content));
+                return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
             }
             catch (Exception ex)
             {
@@ -58,7 +59,7 @@ namespace MyDeckAPI.Controllers
                 if (content != null)
                 {
                     logger.LogInformation("------------> User have been returned <------------");
-                    return Ok(Json(content));
+                    return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
                 }
                 else
                 {
@@ -99,11 +100,14 @@ namespace MyDeckAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("[action]")]
-        public IActionResult SignInByGoogle([FromHeader(Name = "idtoken")] string idtoken)
+        public async Task<IActionResult> SignInByGoogle([FromHeader(Name = "idtoken")] string idtoken)
         {
             try
             {
-                var tmp = db.SignInByGoogle(idtoken);
+                string sessionId;
+                Request.Cookies.TryGetValue("sessionId", out sessionId);
+                if (sessionId == null) { throw new Exception("Empty SessionId");}
+                var tmp = await db.SignInByGoogle(idtoken, Guid.Parse(sessionId));
                 if (tmp != null)
                 {
                     logger.LogWarning("------------> U are signed in <------------ \n");
@@ -120,16 +124,20 @@ namespace MyDeckAPI.Controllers
         }
         [AllowAnonymous]
         [HttpPost("[action]")]
-        public IActionResult RefreshTokens([FromBody]Tokens value)
+        public async Task<IActionResult> RefreshTokens([FromBody]Tokens value)
         {
             try
             {
-                var tmp = db.RefreshTokens(value);
-                if (tmp != null)
-                {
-                    logger.LogWarning("------------> Token has been refreshed <------------ \n");
-                    return Ok(tmp);
-                }
+                string sessionId;
+                Request.Cookies.TryGetValue("sessionId", out sessionId);
+                if (sessionId == null) { throw new Exception("Empty SessionId"); }
+
+                 var tmp = await db.RefreshTokens(value,Guid.Parse(sessionId));
+                 if (tmp != null)
+                 {
+                     logger.LogWarning("------------> Token has been refreshed <------------ \n");
+                     return Ok(tmp);
+                 }
                 logger.LogWarning("------------> Token has not been refreshed <------------ \n");
                 return BadRequest();
             }
@@ -198,13 +206,46 @@ namespace MyDeckAPI.Controllers
                 if (content)
                 {
                     logger.LogInformation("------------> User is unique <------------");
-                    return Ok(Json(content));
+                    return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
                 }
                 else
                 {
                     logger.LogWarning("------------> User is not unique <------------");
-                    return BadRequest(Json(content));
+                    return BadRequest(snakeCaseConverter.ConvertToSnakeCase(content));
                 }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> SignUpWithEmail([FromBody] User usr)
+        {
+            try
+            {
+                string sessionId;
+                Request.Cookies.TryGetValue("sessionId", out sessionId);
+                if (sessionId == null) { throw new Exception("Empty SessionId"); }
+                var response=await db.SignUpWithEmail(usr,Guid.Parse(sessionId));
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("------------> An error has occurred <------------ \n" + ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+        [AllowAnonymous]
+        [HttpPost("[action]/{token}")]
+        public async Task<IActionResult> ConfirmEmail(string token)
+        {
+            try
+            {
+                var obj = new { Username = "asdasd", Email = "asdasda", Password = Encoding.ASCII.GetBytes("sadsadsadsad") };
+                return Ok(Json(obj));
             }
             catch (Exception ex)
             {

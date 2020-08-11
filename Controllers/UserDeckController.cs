@@ -15,13 +15,15 @@ namespace MyDeckAPI.Controllers
     [Route("mydeckapi/[controller]")]
     public class UserDeckController : Controller
     {
-        private readonly UserDeckRepository<UserDeck> db;
+        private readonly UserDeckRepository db;
         private readonly ILogger<UserDeckController> logger;
+        private readonly SnakeCaseConverter snakeCaseConverter;
 
-        public UserDeckController(ILogger<UserDeckController> _logger, IGenericRepository<UserDeck> context)
+        public UserDeckController(ILogger<UserDeckController> _logger, IGenericRepository context, SnakeCaseConverter snakeCaseConverter)
         {
-            db = (UserDeckRepository<UserDeck>)context;
+            db = (UserDeckRepository)context;
             logger = _logger;
+            this.snakeCaseConverter = snakeCaseConverter;
         }
 
 
@@ -32,7 +34,7 @@ namespace MyDeckAPI.Controllers
             {
                 var content = db.FindAll();
                 logger.LogInformation("------------> All userdecks have been returned <------------");
-                return Ok(Json(content));
+                return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
             }
             catch (Exception ex)
             {
@@ -51,7 +53,7 @@ namespace MyDeckAPI.Controllers
                 if (content != null)
                 {
                     logger.LogInformation("------------> Userdeck have been returned <------------");
-                    return Ok(Json(content));
+                    return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
                 }
                 else
                 {

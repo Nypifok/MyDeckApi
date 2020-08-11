@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyDeckAPI.Models
 {
-    public class User
+    public class User : ModelPart
     {
         [Key]
         public Guid User_Id { get; set; }
@@ -16,19 +16,24 @@ namespace MyDeckAPI.Models
         [Required]
         public string Email { get; set; }
         public string GoogleId { get; set; }
-        public string Password { get; set; }
-        public string Avatar_Path { get; set; }
+        [MaxLength(45)]
+        public byte[] Password { get; set; }
+        [Required]
+        public Guid Avatar { get; set; }
         public string Locale { get; set; }
-        public string RefreshToken { get; set; }
-        public string Sault { get; set; }
         public string Role_Name { get; set; }
         public Role Role { get; set; }
+        public File _Avatar { get; set; }
         public ICollection<Subscribe> Followers { get; set; }
         public ICollection<Subscribe> Publishers { get; set; }
         public ICollection<UserDeck> UserDecks { get; set; }
-        public User()
+        public ICollection<Session> Sessions { get; set; }
+        public ICollection<Statistics> Statistics { get; set; }
+        public User() : base()
         {
+            Statistics = new List<Statistics>();
             UserDecks = new List<UserDeck>();
+            Sessions = new List<Session>();
             Publishers = new List<Subscribe>();
             Followers = new List<Subscribe>();
         }

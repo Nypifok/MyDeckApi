@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyDeckAPI.Interfaces;
 using MyDeckAPI.Models;
 using MyDeckAPI.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace MyDeckAPI.Controllers
 {
@@ -15,16 +18,18 @@ namespace MyDeckAPI.Controllers
     [Route("mydeckapi/[controller]")]
     public class CardController : Controller
     {
-        private readonly CardRepository<Card> db;
+        private readonly CardRepository db;
         private readonly ILogger<CardController> logger;
+        private readonly SnakeCaseConverter snakeCaseConverter;
 
-        public CardController(ILogger<CardController> _logger, IGenericRepository<Card> context)
+        public CardController(ILogger<CardController> _logger, CardRepository context, SnakeCaseConverter snakeCaseConverter)
         {
-            db = (CardRepository<Card>)context;
+            db = context;
             logger = _logger;
+            this.snakeCaseConverter = snakeCaseConverter;
         }
 
-        [AllowAnonymous]
+        
         [HttpGet("[action]")]
         public IActionResult FindAll()
         {
@@ -32,7 +37,7 @@ namespace MyDeckAPI.Controllers
             {
                 var content = db.FindAll();
                 logger.LogInformation("------------> All cards have been returned <------------");
-                return Ok(Json(content));
+                return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
             }
             catch (Exception ex)
             {
@@ -51,7 +56,7 @@ namespace MyDeckAPI.Controllers
                 if (content != null)
                 {
                     logger.LogInformation("------------> Card have been returned <------------");
-                    return Ok(Json(content));
+                    return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
                 }
                 else
                 {
@@ -67,51 +72,41 @@ namespace MyDeckAPI.Controllers
         }
 
 
-        [HttpPost("[action]")]
-        public IActionResult Insert([FromBody] IEnumerable<Card> value)
+        /*[HttpPost("[action]")]
+        public async Task<IActionResult> Insert([FromForm] IEnumerable<FilledCard> value)
         {
             try
             {
-                var content = value;
-                foreach (Card crd in content)
-                {
-                    db.Insert(crd);
-                }
-
+                var content = await db.Insert(value);
                 db.Save();
                 logger.LogInformation("------------> Card/s have been added <------------");
-                return Ok();
+                return Ok(content);
             }
             catch (Exception ex)
             {
                 logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
 
 
-        [HttpPut("[action]")]
-        public IActionResult Update([FromBody]IEnumerable<Card> value)
+       /* [HttpPut("[action]")]
+        public IActionResult Update([FromBody]IEnumerable<FilledCard> value)
         {
             try
             {
-                var content = value;
-
-                foreach (Card crd in content)
-                {
-                    db.Update(crd);
-                }
-
+                //var content = db.Update(value);
+                var content = 1;
                 db.Save();
                 logger.LogInformation("------------> Card/s have been updated <------------");
-                return Ok();
+                return Ok(content);
             }
             catch (Exception ex)
             {
                 logger.LogWarning("------------> An error has occurred <------------ \n"+ ex.Message);
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
 
         [AllowAnonymous]
         [HttpDelete("[action]")]
@@ -130,5 +125,6 @@ namespace MyDeckAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
     }
 }

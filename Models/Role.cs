@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace MyDeckAPI.Models
 {
-    public class Role
+    public class Role : ModelPart
     {
         [Key]
         [Required]
         public string Role_Name { get; set; }
         public ICollection<User> Users { get; set; }
-        public Role()
+        public Role() : base()
         {
             Users = new List<User>();
         }

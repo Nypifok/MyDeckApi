@@ -6,25 +6,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using MyDeckAPI.Data.MediaContent;
 
 namespace MyDeckAPI.Services
 {
-    public class DeckRepository<Deck> : IGenericRepository<Deck> where Deck : class
+    public class DeckRepository : IGenericRepository
     {
-        private MDContext _context;
-        private DbSet<Deck> table;
+        private readonly MDContext _context;
+        private readonly DbSet<Deck> table;
+        private readonly SnakeCaseConverter snakeCaseConverter;
 
-        public DeckRepository(MDContext context)
+        public DeckRepository(MDContext context, SnakeCaseConverter snakeCaseConverter)
         {
             _context = context;
             table = _context.Set<Deck>();
+            this.snakeCaseConverter = snakeCaseConverter;
         }
 
-        public void Delete(object Id)
+        public void Delete(IEnumerable<Deck> decks)
         {
-
-            Deck exists = table.Find(Id);
-            table.Remove(exists);
+            table.RemoveRange(decks);
+            _context.SaveChangesAsync();
         }
 
         public List<Deck> FindAll()
@@ -37,40 +39,32 @@ namespace MyDeckAPI.Services
             return table.Find(Id);
         }
 
-        public void Insert(Models.Deck obj)
+        /*public async Task<string> InsertAsync(IEnumerable<Deck> obj)
         {
-           
-            _context.Decks.Add(obj);
-            var usrdck = new UserDeck { Deck_Id = obj.Deck_Id, User_Id = Guid.Parse(obj.Author) };
-            _context.UserDecks.Add(usrdck);
-      
-        }
-        public void Insert(Deck obj)
-        {
-        }
+            
+        }*/
 
         public void Save()
         {
             _context.SaveChanges();
         }
 
-        public void Update(Deck obj)
+       /* public async Task<string> Update(FilledDeck obj)
         {
-            table.Update(obj);
-        }
+            var filler = new DeckFiller();
+            Models.Deck dck = (Models.Deck)await filler.ConvertToModel(obj,contentSaver);
+            _context.Decks.Update(dck);
+            return snakeCaseConverter.ConvertToSnakeCase(dck);
+        }*/
         public string AllCurrentUserDecks(string login)
         {
             var content = _context.Decks.Where(d => d.Author == login && d.IsPrivate == false).ToList();
-            return JsonConvert.SerializeObject(content);
+            return snakeCaseConverter.ConvertToSnakeCase(content);
         }
         public string AllCurrentUserDecksWithCards(string login)
         {
             var content = _context.Decks.Where(d => d.Author == login && d.IsPrivate == false).Include(c => c.Cards).ToList();
-            return JsonConvert.SerializeObject(content, Formatting.Indented,
-                new JsonSerializerSettings
-                {
-                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                });
+            return snakeCaseConverter.ConvertToSnakeCase(content);
         }
         public string ChosenCategoryFeed(string categoryname, int pagenumber = 0)
         {
@@ -91,7 +85,7 @@ namespace MyDeckAPI.Services
                                     })
                                     .ToList();
 
-            return JsonConvert.SerializeObject(decks);
+            return snakeCaseConverter.ConvertToSnakeCase(decks);
         }
         public string AllUserDecks(Guid id)
         {
@@ -102,25 +96,15 @@ namespace MyDeckAPI.Services
 
 
 
-            return JsonConvert.SerializeObject(decks, Formatting.Indented,
-                 new JsonSerializerSettings
-                 {
-                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                 });
+            return snakeCaseConverter.ConvertToSnakeCase(decks);
         }
-        public string WatchDeck(Guid id)
+        /*public string WatchDeck(Guid id)
         {
             var deck = _context.Decks.Where(d => d.Deck_Id == id).Include(d => d.Cards).FirstOrDefault();
-            var repo = new UserRepository<User>(_context);
+            //TODO REFACTORING
+            var repo = new UserRepository(_context,snakeCaseConverter);
             var usr = JsonConvert.DeserializeObject(repo.UserProfile(Guid.Parse(deck.Author)));
-
-
-
-            return JsonConvert.SerializeObject(new { Deck=deck,Author=usr }, Formatting.Indented,
-                 new JsonSerializerSettings
-                 {
-                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                 });
-        }
+            return snakeCaseConverter.ConvertToSnakeCase(new { Deck = deck, Author = usr });
+        }*/
     }
 }

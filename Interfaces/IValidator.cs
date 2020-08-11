@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace MyDeckAPI.Interfaces
 {
-    public interface IGenericRepository
+    public interface IValidator
     {
+        public abstract bool IsValid();
     }
 }

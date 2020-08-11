@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyDeckAPI", "MyDeckAPI.csproj", "{540C6868-0BC5-4936-B9A9-E1C4872B3396}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyDeckAPI.Tests", "..\MyDeckAPI.Tests\MyDeckAPI.Tests.csproj", "{C313F580-B24D-4101-A8A1-ABA17F40E5BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{540C6868-0BC5-4936-B9A9-E1C4872B3396}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{540C6868-0BC5-4936-B9A9-E1C4872B3396}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{540C6868-0BC5-4936-B9A9-E1C4872B3396}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C313F580-B24D-4101-A8A1-ABA17F40E5BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C313F580-B24D-4101-A8A1-ABA17F40E5BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C313F580-B24D-4101-A8A1-ABA17F40E5BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C313F580-B24D-4101-A8A1-ABA17F40E5BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

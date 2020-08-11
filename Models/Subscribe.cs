@@ -7,18 +7,19 @@ using System.Threading.Tasks;
 
 namespace MyDeckAPI.Models
 {
-    public class Subscribe
+    public class Subscribe : ModelPart
     {
         [Key]
         public Guid Subscribe_Id { get; set; } 
         public Guid Follower_Id { get; set; }
         public User Follower { get; set; }
         public Guid Publisher_Id { get; set; }
-        public User Publisher { get; set; }
+        public User Publisher {get; set; }
 
+        public Subscribe() : base()
+        {
 
-
-
+        }
 
     }
 }

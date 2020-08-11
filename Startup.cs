@@ -19,24 +19,31 @@ using MyDeckAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MyDeckAPI.Security;
+using Microsoft.AspNetCore.Authorization;
+using MyDeckAPI.Data.MediaContent;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace MyDeckAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _env;
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+            _env = env;
             Configuration = configuration;
+            var contentRoot = configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
         }
 
         public IConfiguration Configuration { get; }
 
-      
+
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
+                .AddJwtBearer(options =>
+                {
                     options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -47,19 +54,41 @@ namespace MyDeckAPI
                         ValidateLifetime = true,
                         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true,
-                        ClockSkew=TimeSpan.FromMinutes(5)
+                        ClockSkew = TimeSpan.FromMinutes(5)
+                    };
+                }).AddJwtBearer("EmailConfirmation",options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = AuthOptions.ISSUER,
+                        ValidateAudience = true,
+                        ValidAudience = AuthOptions.AUDIENCE,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = AuthOptions.GetEmailConfirmationSymmetricSecurityKey(),
+                        ValidateIssuerSigningKey = true,
+                        ClockSkew = TimeSpan.FromMinutes(5)
                     };
                 });
-           
 
+            if (_env.IsDevelopment())
+            {
+              services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+            }
             services.AddDbContext<MDContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            
-            services.AddTransient<IGenericRepository<User>, UserRepository<User>>();
-            services.AddTransient<IGenericRepository<UserDeck>, UserDeckRepository<UserDeck>>();
-            services.AddTransient<IGenericRepository<Deck>, DeckRepository<Deck>>();
-            services.AddTransient<IGenericRepository<Subscribe>, SubscribeRepository<Subscribe>>();
-            services.AddTransient<IGenericRepository<Card>, CardRepository<Card>>();
-           
+
+            services.AddTransient<CardRepository>();
+            services.AddTransient<FileRepository>();
+            services.AddTransient<UserRepository>();
+            services.AddTransient<UserDeckRepository>();
+            services.AddTransient<DeckRepository>();
+            services.AddTransient<SubscribeRepository>();
+            services.AddTransient<MailService>();
+            services.AddSingleton<SnakeCaseConverter>();
+            services.AddTransient<ContentSaver>();
+            services.AddTransient<AuthOptions>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -78,22 +107,22 @@ namespace MyDeckAPI
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyDeck API V1");
-              
+
             });
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-           
+
 
         }
     }

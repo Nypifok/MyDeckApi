@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MyDeckAPI.Services
 {
-    public class SubscribeRepository<Subscribe> : IGenericRepository<Subscribe> where Subscribe : class
+    public class SubscribeRepository : IGenericRepository
     {
         private MDContext _context;
         private DbSet<Subscribe> table;

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace MyDeckAPI.Models
 {
-    public class Category
+    public class Category : ModelPart
     {
         [Key]
         [Required]
         public string Category_Name { get; set; }
         public ICollection<Deck> Decks { get; set; }
-        public Category()
+        public Category() : base()
         {
             Decks = new List<Deck>();
         }

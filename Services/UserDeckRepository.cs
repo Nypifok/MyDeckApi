@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyDeckAPI.Services
 {
-    public class UserDeckRepository<UserDeck> : IGenericRepository<UserDeck> where UserDeck : class
+    public class UserDeckRepository : IGenericRepository
     {
         private MDContext _context;
         private DbSet<UserDeck> table;

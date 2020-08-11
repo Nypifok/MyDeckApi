@@ -15,13 +15,15 @@ namespace MyDeckAPI.Controllers
     [Route("mydeckapi/[controller]")]
     public class SubscribeController : Controller
     {
-        private readonly SubscribeRepository<Subscribe> db;
+        private readonly SubscribeRepository db;
         private readonly ILogger<SubscribeController> logger;
+        private readonly SnakeCaseConverter snakeCaseConverter;
 
-        public SubscribeController(ILogger<SubscribeController> _logger, IGenericRepository<Subscribe> context)
+        public SubscribeController(ILogger<SubscribeController> _logger, IGenericRepository context, SnakeCaseConverter snakeCaseConverter)
         {
-            db =(SubscribeRepository<Subscribe>)context;
+            db =(SubscribeRepository)context;
             logger = _logger;
+            this.snakeCaseConverter = snakeCaseConverter;
         }
 
 
@@ -32,7 +34,7 @@ namespace MyDeckAPI.Controllers
             {
                 var content = db.FindAll();
                 logger.LogInformation("------------> All subscribes have been returned <------------");
-                return Ok(Json(content));
+                return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
             }
             catch (Exception ex)
             {
@@ -51,7 +53,7 @@ namespace MyDeckAPI.Controllers
                 if (content != null)
                 {
                     logger.LogInformation("------------> Subscribe have been returned <------------");
-                    return Ok(Json(content));
+                    return Ok(snakeCaseConverter.ConvertToSnakeCase(content));
                 }
                 else
                 {
